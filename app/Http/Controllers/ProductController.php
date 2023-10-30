@@ -6,6 +6,7 @@ use App\Models\Maker;
 use App\Models\Product;
 use App\Models\Image;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -79,8 +80,9 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $request->validate([
+        DB::beginTransaction();
+        try{
+            $request->validate([
             'product_name' => 'required|max:20',
             'maker_name' => 'required|integer',
             'price' => 'required|integer',
@@ -98,13 +100,18 @@ class ProductController extends Controller
             //$product->img_path = $request->input(["img_path"]);
             
 
-        if($request->hasFile('img_path')){
+            if($request->hasFile('img_path')){
             $filename = $request->file('img_path')->getClientOriginalName();
             $filePath = $request->file('img_path')->storeAs('public/images',$filename);
             $product->img_path = 'storage/images/' . $filename;
+            }
+        
+            $product->save();
+            DB::commit();
+        }catch (\Exception $e) {
+            DB::rollback();
         }
         
-        $product->save();
         return redirect()->route('products.index');
     }
 
@@ -143,22 +150,28 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $request->validate([
-            'product_name' => 'required|max:20',
-            'maker_name' => 'required|integer',
-            'price' => 'required|integer',
-            'stock' => 'required|integer',
-            'comment' => 'nullable|max:200',
-            'img_path' => 'nullable|image|max:2048',
-            ]);
+        DB::beginTransaction();
+        try{
+            $request->validate([
+                'product_name' => 'required|max:20',
+                'maker_name' => 'required|integer',
+                'price' => 'required|integer',
+                'stock' => 'required|integer',
+                'comment' => 'nullable|max:200',
+                'img_path' => 'nullable|image|max:2048',
+             ]);
         
-        $product->product_name = $request->input(["product_name"]);
-        $product->maker_name = $request->input(["maker_name"]);
-        $product->price = $request->input(["price"]);
-        $product->stock = $request->input(["stock"]);
-        $product->comment = $request->input(["comment"]);
-        $product->img_path = $request->input(["img_path"]);
-        $product->save();
+            $product->product_name = $request->input(["product_name"]);
+            $product->maker_name = $request->input(["maker_name"]);
+            $product->price = $request->input(["price"]);
+            $product->stock = $request->input(["stock"]);
+            $product->comment = $request->input(["comment"]);
+            $product->img_path = $request->input(["img_path"]);
+            $product->save();
+            DB::commit();
+        }catch (\Exception $e) {
+            DB::rollback();
+        }
 
         return redirect()->route('products.index');
     }
@@ -171,7 +184,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
+        DB::beginTransaction();
+        try{
+            $product->delete();
+            DB::commit();
+        }catch (\Exception $e) {
+            DB::rollback();
+        }
         return redirect()->route('products.index')
                         ->with('success',$product->product_name.'を削除しました');
     }

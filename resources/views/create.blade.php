@@ -66,12 +66,8 @@
         </tr>
         <tr>
             <td>商品画像</td>
-            <td>
-                
-                    
-                    <input type="file" name="img_path">
-                   
-                
+            <td>      
+                    <input type="file" name="img_path">               
             </td>
         </tr>
     </table> 

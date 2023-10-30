@@ -10,7 +10,7 @@
 </div>
  
 <div style="text-align:left;">
-<form action="{{ route('product.update',$product->id) }}" method="POST">
+<form action="{{ route('product.update',$product->id) }}" method="POST" enctype='multipart/form-data'>
     @method('PUT')
     @csrf
      
@@ -72,11 +72,9 @@
         <tr>
             <td>商品画像</td>
             <td>
-                <form method="POST" action="{{ route('product.update', $product) }}" enctype="multipart/form-data">
-                    @csrf
+                
                     <input type="file" name="img_path">
-                    
-                </form>
+                
             </td>
         </tr>
     </table>

@@ -72,7 +72,7 @@
         <tr>
             <td style="text-align:right">{{ $product->id }}</td>
             <td>
-                <img src="{{ asset($product->img_path) }}" alt="商品画像" width="100">
+                <img src="{{ asset($product->img_path) }}" width="100">
             </td>
             <td style="text-align:right">{{ $product->product_name }}</td>
             <td style="text-align:right">￥{{ $product->price}}</td>
