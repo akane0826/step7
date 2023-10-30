@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td>商品画像</td>
-            <td>{{ $product->img_path }}</td>
+            <td><img src="{{ asset($product->img_path) }}" width="300"></td>
         </tr>
         <tr>
             <td>商品名</td>

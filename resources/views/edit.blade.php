@@ -72,7 +72,11 @@
         <tr>
             <td>商品画像</td>
             <td>
-                <input type="text" name="img_path" value="{{$product->img_path}}" class="form-control" placeholder="商品画像">
+                <form method="POST" action="{{ route('product.update', $product) }}" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="img_path">
+                    
+                </form>
             </td>
         </tr>
     </table>

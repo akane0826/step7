@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Maker;
 use App\Models\Product;
+use App\Models\Image;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -30,10 +31,10 @@ class ProductController extends Controller
         //$products = Product::latest()->paginate(5);
         $query = Product::query();
         $query->join('makers','products.maker_name','=','makers.id')
-            ->select('products.*','makers.str as maker_name')
+            ->select('products.*','makers.str as maker_name');
         
-            ->orderBy('products.id','ASC')
-            ->paginate(5);
+            
+           
 
         
 
@@ -46,13 +47,13 @@ class ProductController extends Controller
         if(!empty($keyword)) {
             $query->where('product_name', 'LIKE', "%{$keyword}%");
         }
-
+        $query->orderBy('products.id','ASC');
         $products = $query->get();
 
         $makers = Maker::all();
 
-        return view('index',compact('products','category','keyword'))
-            ->with('makers',$makers,'i',(request()->input('page',1)-1)*5);
+        return view('index',compact('products','category','keyword','makers'));
+            //->with('makers',$makers,'i',(request()->input('page',1)-1)*5);
             
             
            
@@ -85,7 +86,7 @@ class ProductController extends Controller
             'price' => 'required|integer',
             'stock' => 'required|integer',
             'comment' => 'nullable|max:150',
-            'img_path' => 'nullable',
+            'img_path' => 'nullable|image|max:2048',
             ]);
         
             $product = new Product;
@@ -94,8 +95,16 @@ class ProductController extends Controller
             $product->price = $request->input(["price"]);
             $product->stock = $request->input(["stock"]);
             $product->comment = $request->input(["comment"]);
-            $product->img_path = $request->input(["img_path"]);
-            $product->save();
+            //$product->img_path = $request->input(["img_path"]);
+            
+
+        if($request->hasFile('img_path')){
+            $filename = $request->file('img_path')->getClientOriginalName();
+            $filePath = $request->file('img_path')->storeAs('public/images',$filename);
+            $product->img_path = 'storage/images/' . $filename;
+        }
+        
+        $product->save();
         return redirect()->route('products.index');
     }
 
@@ -140,7 +149,7 @@ class ProductController extends Controller
             'price' => 'required|integer',
             'stock' => 'required|integer',
             'comment' => 'nullable|max:200',
-            'img_path' => 'nullable',
+            'img_path' => 'nullable|image|max:2048',
             ]);
         
         $product->product_name = $request->input(["product_name"]);
@@ -166,4 +175,6 @@ class ProductController extends Controller
         return redirect()->route('products.index')
                         ->with('success',$product->product_name.'を削除しました');
     }
+
+    
 }

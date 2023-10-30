@@ -10,7 +10,7 @@
 </div>
  
 <div style="text-align:left;">
-<form action="{{ route('product.store') }}" method="POST">
+<form action="{{ route('product.store') }}" method="POST" enctype='multipart/form-data'>
     @csrf
      
     <table class="table table-bordered">
@@ -67,7 +67,11 @@
         <tr>
             <td>商品画像</td>
             <td>
-                <input type="text" name="img_path" class="form-control" placeholder="商品画像">
+                
+                    
+                    <input type="file" name="img_path">
+                   
+                
             </td>
         </tr>
     </table> 
