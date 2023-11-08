@@ -67,7 +67,10 @@
         <tr>
             <td>商品画像</td>
             <td>      
-                    <input type="file" name="img_path">               
+                <input type="file" name="img_path">
+                @error('img_path')
+                <span style="color:red;">２メガバイト以下の画像ファイルを添付してください</span>
+                @enderror               
             </td>
         </tr>
     </table> 

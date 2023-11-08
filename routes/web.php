@@ -40,7 +40,7 @@ Route::post('/products/store/', 'App\Http\Controllers\ProductController@store')-
 
 Route::get('/products/show/{product}', 'App\Http\Controllers\ProductController@show')->name('product.show');
 
-Route::get('/products/edit/{product}','App\Http\Controllers\ProductController@edit')->name('product.edit');
-Route::put('/products/edit/{product}','App\Http\Controllers\ProductController@update')->name('product.update');
+Route::get('/products/edit/{id}','App\Http\Controllers\ProductController@edit')->name('product.edit');
+Route::put('/products/edit/{id}','App\Http\Controllers\ProductController@update')->name('product.update');
 
 Route::delete('/products/{product}','App\Http\Controllers\ProductController@destroy')->name('product.destroy');

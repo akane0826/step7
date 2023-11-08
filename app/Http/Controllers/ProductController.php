@@ -27,31 +27,13 @@ class ProductController extends Controller
         $keyword = $request->input('keyword');
         $category = $request->input('category');
         
-        
+        $model = new Product;
+        $products=$model->search($keyword, $category);
         
         //$products = Product::latest()->paginate(5);
-        $query = Product::query();
-        $query->join('makers','products.maker_name','=','makers.id')
-            ->select('products.*','makers.str as maker_name');
         
-            
-           
-
-        
-
-        
-
-        if(!empty($category)) {
-            $query->where('maker_name', 'LIKE', $category);
-        }
-
-        if(!empty($keyword)) {
-            $query->where('product_name', 'LIKE', "%{$keyword}%");
-        }
-        $query->orderBy('products.id','ASC');
-        $products = $query->get();
-
         $makers = Maker::all();
+
 
         return view('index',compact('products','category','keyword','makers'));
             //->with('makers',$makers,'i',(request()->input('page',1)-1)*5);
@@ -79,10 +61,8 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        DB::beginTransaction();
-        try{
-            $request->validate([
+    {   
+        $request->validate([
             'product_name' => 'required|max:20',
             'maker_name' => 'required|integer',
             'price' => 'required|integer',
@@ -90,23 +70,29 @@ class ProductController extends Controller
             'comment' => 'nullable|max:150',
             'img_path' => 'nullable|image|max:2048',
             ]);
+
+        DB::beginTransaction();
+        try{
+            
         
             $product = new Product;
-            $product->product_name = $request->input(["product_name"]);
-            $product->maker_name = $request->input(["maker_name"]);
-            $product->price = $request->input(["price"]);
-            $product->stock = $request->input(["stock"]);
-            $product->comment = $request->input(["comment"]);
+            //$product->product_name = $request->input(["product_name"]);
+            //$product->maker_name = $request->input(["maker_name"]);
+            // $product->price = $request->input(["price"]);
+            // $product->stock = $request->input(["stock"]);
+            // $product->comment = $request->input(["comment"]);
             //$product->img_path = $request->input(["img_path"]);
-            
+           
 
             if($request->hasFile('img_path')){
             $filename = $request->file('img_path')->getClientOriginalName();
-            $filePath = $request->file('img_path')->storeAs('public/images',$filename);
-            $product->img_path = 'storage/images/' . $filename;
+            $request->file('img_path')->storeAs('public/images',$filename);
+            $filePath = 'storage/images/' . $filename;
+            }else{
+                $filePath = null;
             }
-        
-            $product->save();
+            $product->registSubmit($request, $filePath);
+            // $product->save();
             DB::commit();
         }catch (\Exception $e) {
             DB::rollback();
@@ -134,8 +120,9 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
-    {
+    public function edit($id)
+    {   
+        $product = Product::find($id);
         $makers = Maker::all();
         return view('edit',compact('product'))
             ->with('makers',$makers);
@@ -148,26 +135,38 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
-    {
+    public function update(Request $request, $id)
+    {   
+        $request->validate([
+            'product_name' => 'required|max:20',
+            'maker_name' => 'required|integer',
+            'price' => 'required|integer',
+            'stock' => 'required|integer',
+            'comment' => 'nullable|max:200',
+            'img_path' => 'nullable|image|max:2048',
+         ]);
         DB::beginTransaction();
         try{
-            $request->validate([
-                'product_name' => 'required|max:20',
-                'maker_name' => 'required|integer',
-                'price' => 'required|integer',
-                'stock' => 'required|integer',
-                'comment' => 'nullable|max:200',
-                'img_path' => 'nullable|image|max:2048',
-             ]);
-        
-            $product->product_name = $request->input(["product_name"]);
-            $product->maker_name = $request->input(["maker_name"]);
-            $product->price = $request->input(["price"]);
-            $product->stock = $request->input(["stock"]);
-            $product->comment = $request->input(["comment"]);
-            $product->img_path = $request->input(["img_path"]);
-            $product->save();
+            $productModel = new Product;
+            
+            // $product->product_name = $request->input(["product_name"]);
+            // $product->maker_name = $request->input(["maker_name"]);
+            // $product->price = $request->input(["price"]);
+            // $product->stock = $request->input(["stock"]);
+            // $product->comment = $request->input(["comment"]);
+            // $product->img_path = $request->input(["img_path"]); 
+
+            if($request->hasFile('img_path')){
+            $filename = $request->file('img_path')->getClientOriginalName();
+            $request->file('img_path')->storeAs('public/images',$filename);
+            $filePath = 'storage/images/' . $filename;
+            $productModel->registEdit($request, $id, $filePath);
+            }else{
+                $filePath = null;
+                $productModel->registEditNoImg($request, $id);
+            }
+                      
+            //$product->save();
             DB::commit();
         }catch (\Exception $e) {
             DB::rollback();
