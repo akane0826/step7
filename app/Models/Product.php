@@ -36,7 +36,7 @@ class Product extends Model
     }
 
     //検索
-    public function search($keyword, $category){
+    public function search($keyword, $category, $min_price, $max_price, $min_stock, $max_stock){
         $query=DB::table('products')
         
         ->join('makers','products.maker_name','=','makers.id')
@@ -51,6 +51,23 @@ class Product extends Model
             $query->where('product_name', 'LIKE', "%{$keyword}%");
         }
         $query->orderBy('products.id','ASC');
+
+        if(!empty($min_price)){
+            $query->where('products.price', '=>', "%{$min_price}%");
+        }
+
+        if(!empty($max_price)){
+            $query->where('products.price', '<=', "%{$max_price}%");
+        }
+
+        if(!empty($min_stock)){
+            $query->where('products.stock', '=>', "%{$min_stock}%");
+        }
+
+        if(!empty($max_stock)){
+            $query->where('products.stock', '<=', "%{$max_stock}%");
+        }
+
         $products = $query->get();
         return $products;
     }

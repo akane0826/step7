@@ -26,16 +26,22 @@ class ProductController extends Controller
         //検索フォームに入力された値を取得
         $keyword = $request->input('keyword');
         $category = $request->input('category');
+        $min_price = $request->input('min_price');
+        $max_price = $request->input('max_price');
+        $min_stock = $request->input('min_stock');
+        $max_stock = $request->input('max_stock');
+
+        
         
         $model = new Product;
-        $products=$model->search($keyword, $category);
+        $products=$model->search($keyword, $category, $min_price, $max_price, $min_stock, $max_stock);
         
         //$products = Product::latest()->paginate(5);
         
         $makers = Maker::all();
 
 
-        return view('index',compact('products','category','keyword','makers'));
+        return view('index',compact('products','category','keyword','min_price','max_price','min_stock','max_stock','makers'));
             //->with('makers',$makers,'i',(request()->input('page',1)-1)*5);
             
             
