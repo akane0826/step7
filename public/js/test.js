@@ -1,10 +1,12 @@
-$(function(){
-    loadSort();
-});
-
+//$(function(){
+    //    loadSort();
+//});
 //function loadSort(){
-    //$('#products-table').tablesorter();
+  //  $('#pr-table').tablesorter();
 //};
+$(document).ready(function() {
+    $('#pr-table').tablesorter();
+});
 
 $(function(){
     console.log('読み込みOK');
@@ -39,16 +41,17 @@ $(function(){
 
         if(deleteConfirm == true){
             let clickEle = $(this);
-            let deleteId = clickEle.data('delete-id');
+            let deleteId = clickEle.data('delete_id');
             console.log(deleteId);
 
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url:'/products/{product}' + deleteId,
-                type:'delete',
-                data:{'_method':'DELETE'}
+                url:'/products/' + deleteId,
+                type:'POST',
+                
+                data: {'_method':'DELETE'},
             }).done(function(){
                 console.log('削除成功');
                 clickEle.parents('tr').remove();

@@ -50,23 +50,24 @@ class Product extends Model
         if(!empty($keyword)) {
             $query->where('product_name', 'LIKE', "%{$keyword}%");
         }
-        $query->orderBy('products.id','ASC');
 
         if(!empty($min_price)){
-            $query->where('products.price', '=>', "%{$min_price}%");
+            $query->where('products.price', '>=', $min_price);
         }
 
         if(!empty($max_price)){
-            $query->where('products.price', '<=', "%{$max_price}%");
+            $query->where('products.price', '<=', $max_price);
         }
 
         if(!empty($min_stock)){
-            $query->where('products.stock', '=>', "%{$min_stock}%");
+            $query->where('products.stock', '>=', $min_stock);
         }
 
         if(!empty($max_stock)){
-            $query->where('products.stock', '<=', "%{$max_stock}%");
+            $query->where('products.stock', '<=', $max_stock);
         }
+
+        $query->orderBy('products.id','ASC');
 
         $products = $query->get();
         return $products;

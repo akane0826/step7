@@ -52,52 +52,58 @@
                     </div>
                 </td>
 
-                <td>
+                <div>
                     <input type="submit" class="search-btn" value="検索">
-                </td>
+                </div>
 
             </row>
         </form>
     </div>
+
+    <div>
+    <a class="btn btn-success" href="{{ route('product.create') }}">新規登録</a>
+    </div>
+
     
 
     <div id="products-table">
         <table class="table table-bordered" id="pr-table">
-            <tr>
-                <th>ID</th>
-                <th>商品画像</th>
-                <th>商品名</th>
-                <th>価格</th>
-                <th>在庫数</th>
-                <th>メーカー名</th>
-                <th style="text-align:center">
-                    <a class="btn btn-success" href="{{ route('product.create') }}">新規登録</a>
-                </th>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>商品画像</th>
+                    <th>商品名</th>
+                    <th>価格</th>
+                    <th>在庫数</th>
+                    <th>メーカー名</th>      
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($products as $product)
                 
-            </tr>
-            @foreach ($products as $product)
+                <tr>
+                    <td style="text-align:right">{{ $product->id }}</td>
+                    <td>
+                        <img src="{{ asset($product->img_path) }}" width="100">
+                    </td>
+                    <td style="text-align:right">{{ $product->product_name }}</td>
+                    <td style="text-align:right">￥{{ $product->price}}</td>
+                    <td style="text-align:right">{{ $product->stock }}</td>
+                    <td style="text-align:right">{{ $product->maker_name }}</td>
+                    <td style="text-align:center">
+                        <a class="btn btn-primary" href="{{ route('product.show',$product->id) }}">詳細</a>
+                    </td>
+                    <td style="text-align:center">
+                        <form action="{{ route('product.destroy',$product->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger" id="delete-btn" data-delete_id="{{ $product->id }}" onclick='return confirm("削除しますか？");'>削除</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
             
-            <tr>
-                <td style="text-align:right">{{ $product->id }}</td>
-                <td>
-                    <img src="{{ asset($product->img_path) }}" width="100">
-                </td>
-                <td style="text-align:right">{{ $product->product_name }}</td>
-                <td style="text-align:right">￥{{ $product->price}}</td>
-                <td style="text-align:right">{{ $product->stock }}</td>
-                <td style="text-align:right">{{ $product->maker_name }}</td>
-                <td style="text-align:center">
-                    <a class="btn btn-primary" href="{{ route('product.show',$product->id) }}">詳細</a>
-                </td>
-                <td style="text-align:center">
-                    <form action="{{ route('product.destroy',$product->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger" id="delete-btn" onclick='return confirm("削除しますか？");'>削除</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
         </table>
     </div>
     
