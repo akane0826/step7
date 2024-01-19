@@ -15,7 +15,7 @@ class MakersSeeder extends Seeder
      */
     public function run()
     {
-        \DB::table('makers')->insert([
+        DB::table('makers')->insert([
             [
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => null,

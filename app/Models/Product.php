@@ -21,6 +21,14 @@ class Product extends Model
         'updated_at',
         ];
     
+    //商品減算時の指定
+    public function getProductById($id){
+        $product = DB::table('products')
+            ->select('id','product_name','stock')
+            ->where('id','=',$id)
+            ->first();
+        return $product;
+    }
 
     //商品新規登録
     public function registSubmit($request, $filePath){

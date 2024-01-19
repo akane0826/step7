@@ -35,7 +35,7 @@ $(function(){
     })
 
     //削除ボタン押下イベント
-    $('#delete-btn').on('click',function(e){
+    $('.delete-btn').on('click',function(e){
         e.preventDefault();
         let deleteConfirm = confirm('削除しますか？');
 

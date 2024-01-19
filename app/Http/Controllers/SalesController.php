@@ -2,42 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Sale;
+use Throwable;
 
 class SalesController extends Controller
 {
     public function buy(Request $request)
     {
-        // リクエストから必要なデータを取得する
-        $productId = $request->input('product_id');
-        $quantity = $request->input('quantity', 1); // 購入する数を代入する もしも”quantity”というデータが送られていない場合は1を代入する
+        $product_model = new product();
+        $sale_model = new sale();
 
-        // データベースから対象の商品を検索・取得
-        $pr = Product::find($productId);
+        $id = $request->input('product_id');
+        $pr = $product_model->getProductById($id);
 
-        // 商品が存在しない、または在庫が不足している場合のバリデーションを行う
+        // 商品がない、在庫がない場合
         if (!$pr) {
-            return response()->json(['message' => '商品が存在しません'], 404);
+            return response()->json('商品がありません');
         }
-        if ($pr->stock < $quantity) {
-            return response()->json(['message' => '商品が在庫不足です'], 400);
+        if ($pr->stock <= 0) {
+            return response()->json('在庫がありません');
         }
 
-        // 在庫を減少させる
-        $pr->stock -= $quantity; // $quantityは購入数を指し、デフォルトで1が指定されている
-        $pr->save();
+        try {
+            DB::beginTransaction();
+            //productsテーブルの在庫減らす
+            $buy = $sale_model->decStock($id);
+            //salesテーブルにインサート
+            $sale_model->registSale($id);
+        
+            DB::commit();    
+        } catch (Throwable $e){
+            DB::rollBack();
+        }
 
-        // Salesテーブルに商品IDと購入日時を記録する
-        $sale = new Sale([
-            'product_id' => $productId,
-        // 主キーであるIDと、created_at , updated_atは自動入力されるため不要
-        ]);
-
-        $sale->save();
-
-        // レスポンスを返す
-        return response()->json(['message' => '購入成功']);
+        //購入処理後の情報を返却
+        return response()->json($buy);
+        
     }
 }
