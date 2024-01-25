@@ -1,40 +1,16 @@
-//$(function(){
-    //    loadSort();
-//});
-//function loadSort(){
-  //  $('#pr-table').tablesorter();
-//};
-$(document).ready(function() {
+function loadSort(){
     $('#pr-table').tablesorter();
+};
+$(function(){
+        loadSort();
 });
 
-$(function(){
-    console.log('読み込みOK');
+//$(document).ready(function() {
+    //$('#pr-table').tablesorter();
+//});
 
-    //検索ボタン押下イベント
-    $('.search-btn').on('click', function(e){
-        console.log('検索押した');
-        e.preventDefault();
-
-        let formData =$('#search-form').serialize();
-
-        $.ajax({
-            url:'/products',
-            type:'GET',
-            data:formData,
-            dataType:'html'
-        }).done(function(data){
-           console.log('成功');
-           let newTable = $(data).find('#pr-table');
-           $('#pr-table') .replaceWith(newTable);
-           loadSort();
-        }).fail(function(){
-            alert('通信失敗');
-        })
-
-    })
-
-    //削除ボタン押下イベント
+//削除ボタン押下イベント
+function del(){
     $('.delete-btn').on('click',function(e){
         e.preventDefault();
         let deleteConfirm = confirm('削除しますか？');
@@ -63,6 +39,41 @@ $(function(){
         }else{
             e.preventDefault();
         }
+    })
+};
+
+$(function(){
+    console.log('読み込みOK');
+
+    //検索ボタン押下イベント
+    $('.search-btn').on('click', function(e){
+        console.log('検索押した');
+        e.preventDefault();
+
+        let formData =$('#search-form').serialize();
+
+        $.ajax({
+            url:'/products',
+            type:'GET',
+            data:formData,
+            dataType:'html'
+        }).done(function(data){
+           console.log('成功');
+           let newTable = $(data).find('#pr-table');
+           $('#pr-table') .replaceWith(newTable);
+           loadSort();
+           del();
+        }).fail(function(){
+            alert('通信失敗');
+        })
 
     })
-})
+
+    
+
+    $(function(){
+        del();
+    })
+});
+
+
